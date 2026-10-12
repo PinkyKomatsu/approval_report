@@ -1,0 +1,9 @@
+PySide6>=6.6
+openpyxl>=3.1
+lxml>=5.0
+janome>=0.5
+rank-bm25>=0.2.2
+rapidfuzz>=3.0
+numpy>=1.26
+pytest>=8.0
+pyinstaller>=6.0

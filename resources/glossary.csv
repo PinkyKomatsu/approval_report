@@ -1,0 +1,101 @@
+日本語,英語
+医事会計システム,medical accounting system
+医事会計,medical accounting
+システム更新,system renewal
+電子カルテ,electronic medical record
+診療報酬改定,medical fee revision
+診療報酬,medical fees
+改定,revision
+マスタ移行,master data migration
+データ移行,data migration
+マスタ,master data
+移行リハーサル,migration rehearsal
+移行,migration
+連携テスト,integration test
+総合テスト,system test
+結合テスト,integration test
+単体テスト,unit test
+運用テスト,operational test
+受入テスト,acceptance test
+テスト,test
+連携仕様,interface specification
+連携,integration
+インターフェース,interface
+仕様書,specification
+仕様,specification
+要件定義,requirements definition
+基本設計,basic design
+詳細設計,detailed design
+設計,design
+構築,build
+本番稼働,go-live
+稼働,go-live
+リハーサル,rehearsal
+操作研修,operation training
+職員向け,for staff
+研修,training
+現行業務調査,current operation survey
+業務調査,operation survey
+調査,survey
+帳票,form
+画面,screen
+点数マスタ,fee master
+薬剤マスタ,drug master
+病名マスタ,disease name master
+自動精算機,automatic payment machine
+レセプト,medical claim
+会計,accounting
+受付,reception
+病院,hospital
+ベンダー,vendor
+メーカ,manufacturer
+担当,owner
+担当者,person in charge
+課題,issue
+懸念,concern
+対応方針,response policy
+対応,response
+進捗,progress
+報告,report
+計画,plan
+予定,schedule
+実績,actual
+件数,number of cases
+作業,work
+作成,preparation
+確認,confirmation
+調整,coordination
+協議,discussion
+承認,approval
+レビュー,review
+定例会,regular meeting
+会議,meeting
+完了,completion
+遅延,delay
+未確定,not finalized
+未合意,not agreed
+合意,agreement
+計画どおり,on schedule
+問題なし,no problems
+特になし,none
+毎週,weekly
+今月,this month
+来月,next month
+今後,going forward
+全件,all items
+一部,some
+残件,remaining items
+各部門,each department
+部門,department
+現場,site
+開始,start
+終了,end
+実施,implementation
+済み,done
+未実施,not yet done
+中,(in progress)
+までに,by
+により,due to
+に向けて,toward
+について,regarding
+のため,for
