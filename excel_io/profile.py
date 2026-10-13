@@ -1,4 +1,4 @@
-"""様式プロファイルの自動推定（ひな形・過去事例・フォーマット共通）。
+"""過去事例の列の自動推定（見出しから、対象シート・ヘッダー行・データ開始行・各列の欄を判別する）。
 
 プロファイル（dict）
   sheet        対象シート
@@ -8,7 +8,6 @@
   headers      {"B": "WBS番号", ...}（列 → 見出しの文字列）
   confidence   0〜1
   issues       迷った点の説明（確信度が閾値未満ならプレビューで利用者が指定する）
-  targets      記載先を利用者が指定したセル（フォーマットのみ。{item_key: {欄: "F12"}}）
 
 見出しに「英語」「(EN)」「English」などを含む列は、同じ欄の英語の列（例：report_en）とみなす。
 """
@@ -117,7 +116,7 @@ def detect(path, cfg: dict | None = None) -> dict:
     ranking.sort(key=lambda x: -x[0])
     if not ranking:
         return {"sheet": wb.worksheets[0].title, "header_row": None, "data_start": None, "columns": {}, "headers": {},
-                "confidence": 0.0, "sheets": wb.sheetnames, "targets": {},
+                "confidence": 0.0, "sheets": wb.sheetnames,
                 "issues": ["ヘッダー行が見つかりません。プレビューでヘッダー行と各列を指定してください。"]}
     score, sheet, best = ranking[0]
     ws = wb[sheet]
@@ -147,12 +146,8 @@ def detect(path, cfg: dict | None = None) -> dict:
     conf = round(max(0.0, min(1.0, conf)), 2)
     return {"sheet": sheet, "header_row": header_row, "data_start": data_start,
             "columns": dict(sorted(columns.items(), key=lambda kv: (len(kv[0]), kv[0]))),
-            "headers": headers, "confidence": conf, "issues": issues, "sheets": wb.sheetnames, "targets": {}}
+            "headers": headers, "confidence": conf, "issues": issues, "sheets": wb.sheetnames}
 
-
-def needs_review(profile: dict, cfg: dict) -> bool:
-    th = float(cfg.get("profile", {}).get("confidence_threshold", 0.7))
-    return profile.get("confidence", 0) < th or bool(profile.get("issues"))
 
 
 def read_rows(path, profile: dict, blank_stop: int = 5) -> list[tuple[int, dict]]:

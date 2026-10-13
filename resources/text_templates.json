@@ -1,34 +1,87 @@
 {
-  "_comment": "日英の定型文。reason_*：必要性の根拠の文。phrases：報告内容の日英対訳テンプレート（{x} の部分は用語辞書で訳して差し込む。上にあるものほど優先）",
-  "decisions": {"必要": "Required", "要検討": "To be reviewed", "不要": "Not required"},
+  "_comment": "報告内容の日英対訳テンプレート（phrases。{x} の部分は用語辞書で訳して差し込む。上にあるものほど優先）と欄の英語名",
   "fields": {
-    "wbs_no": "WBS No.", "phase": "Phase", "name": "Work item", "work": "Work description", "report": "Report",
-    "progress": "Progress", "issue": "Issues / concerns", "policy": "Response policy", "owner": "Owner",
-    "plan_date": "Planned date", "actual_date": "Actual date", "note": "Remarks"
+    "wbs_no": "WBS No.",
+    "phase": "Phase",
+    "name": "Work item",
+    "work": "Work description",
+    "report": "Report",
+    "progress": "Progress",
+    "issue": "Issues / concerns",
+    "policy": "Response policy",
+    "owner": "Owner",
+    "plan_date": "Planned date",
+    "actual_date": "Actual date",
+    "note": "Remarks"
   },
-  "reason_stat": {"ja": "過去{total}件中{adopted}件（{rate}%）で転記。", "en": "Included in {adopted} of {total} past projects ({rate}%)."},
-  "reason_none": {"ja": "過去{total}件のいずれにも転記なし。", "en": "Not included in any of {total} past projects."},
-  "reason_no_cases": {"ja": "過去事例がありません。", "en": "No past projects."},
-  "reason_rule": {"ja": "条件『{rule}』に一致。", "en": "Matches condition: {rule}."},
-  "reason_prefer": {"ja": "ルール『{rule}』により優先した事例あり。", "en": "Prioritized projects by rule: {rule}."},
-  "reason_extra": {"ja": "ひな形にない、実用WBSで追加された項目。", "en": "Item added in practical WBS (not in the template)."},
   "phrases": [
-    {"ja": "{x}を実施した。", "en": "{x} was carried out."},
-    {"ja": "{x}を実施する。", "en": "{x} will be carried out."},
-    {"ja": "{x}を実施予定。", "en": "{x} is scheduled."},
-    {"ja": "{x}を完了した。", "en": "{x} was completed."},
-    {"ja": "{x}が完了した。", "en": "{x} was completed."},
-    {"ja": "{x}完了。", "en": "{x} completed."},
-    {"ja": "{x}を確認した。", "en": "{x} was confirmed."},
-    {"ja": "{x}を確認する。", "en": "{x} will be confirmed."},
-    {"ja": "{x}を調整中。", "en": "{x} is being coordinated."},
-    {"ja": "{x}を作成した。", "en": "{x} was prepared."},
-    {"ja": "{x}について協議中。", "en": "{x} is under discussion."},
-    {"ja": "{x}が未確定。", "en": "{x} is not yet finalized."},
-    {"ja": "{x}が遅延している。", "en": "{x} is delayed."},
-    {"ja": "{x}の見込み。", "en": "{x} is expected."},
-    {"ja": "{x}は計画どおり。", "en": "{x} is on schedule."},
-    {"ja": "特になし。", "en": "None."},
-    {"ja": "特になし", "en": "None"}
+    {
+      "ja": "{x}を実施した。",
+      "en": "{x} was carried out."
+    },
+    {
+      "ja": "{x}を実施する。",
+      "en": "{x} will be carried out."
+    },
+    {
+      "ja": "{x}を実施予定。",
+      "en": "{x} is scheduled."
+    },
+    {
+      "ja": "{x}を完了した。",
+      "en": "{x} was completed."
+    },
+    {
+      "ja": "{x}が完了した。",
+      "en": "{x} was completed."
+    },
+    {
+      "ja": "{x}完了。",
+      "en": "{x} completed."
+    },
+    {
+      "ja": "{x}を確認した。",
+      "en": "{x} was confirmed."
+    },
+    {
+      "ja": "{x}を確認する。",
+      "en": "{x} will be confirmed."
+    },
+    {
+      "ja": "{x}を調整中。",
+      "en": "{x} is being coordinated."
+    },
+    {
+      "ja": "{x}を作成した。",
+      "en": "{x} was prepared."
+    },
+    {
+      "ja": "{x}について協議中。",
+      "en": "{x} is under discussion."
+    },
+    {
+      "ja": "{x}が未確定。",
+      "en": "{x} is not yet finalized."
+    },
+    {
+      "ja": "{x}が遅延している。",
+      "en": "{x} is delayed."
+    },
+    {
+      "ja": "{x}の見込み。",
+      "en": "{x} is expected."
+    },
+    {
+      "ja": "{x}は計画どおり。",
+      "en": "{x} is on schedule."
+    },
+    {
+      "ja": "特になし。",
+      "en": "None."
+    },
+    {
+      "ja": "特になし",
+      "en": "None"
+    }
   ]
 }

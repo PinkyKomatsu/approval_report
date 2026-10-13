@@ -1,34 +1,20 @@
 """コピー用のテキスト（Excel にそのまま貼り付けられるタブ区切り）。
 
-列の並び（layout）
-  align ：フォーマットの最初の欄の列から最後の欄の列まで、1 列ずつ並べる。数式の列・結合セルの左上以外の列・
-          欄のない列は空欄にして、Excel の行頭セルに貼ると各欄が正しい列に入るようにする
-  fields：フォーマットの欄だけを列順に並べる（数式の列は除く）
+列の並びは過去事例の列（最初の欄の列から最後の欄の列まで 1 列ずつ。欄のない列は空欄）。
+Excel の行頭のセルに貼ると、各欄が過去事例と同じ列に入る。
 セルの中の改行・タブ・" は、Excel の貼り付けの規則に合わせて "…" で囲む。
 """
 from __future__ import annotations
 
 from openpyxl.utils import column_index_from_string, get_column_letter
 
-ALIGN, FIELDS_ONLY = "align", "fields"
 
-
-def layout(profile: dict, analysis: dict | None, mode: str = ALIGN) -> list[tuple[str, str | None]]:
+def layout(columns: dict[str, str]) -> list[tuple[str, str | None]]:
     """[(列, 欄 または None)]"""
-    analysis = analysis or {}
-    cols = {column_index_from_string(c): m for c, m in (profile.get("columns") or {}).items()}
+    cols = {column_index_from_string(c): m for c, m in (columns or {}).items()}
     if not cols:
         return []
-    formula = set(analysis.get("formula_cols") or [])
-    covered = set(analysis.get("covered_cols") or [])
-    if mode == FIELDS_ONLY:
-        return [(get_column_letter(c), m) for c, m in sorted(cols.items()) if get_column_letter(c) not in formula]
-    out = []
-    for c in range(min(cols), max(cols) + 1):
-        letter = get_column_letter(c)
-        m = cols.get(c)
-        out.append((letter, None if (m is None or letter in formula or letter in covered) else m))
-    return out
+    return [(get_column_letter(c), cols.get(c)) for c in range(min(cols), max(cols) + 1)]
 
 
 def quote(v: str) -> str:

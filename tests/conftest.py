@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import os
-import shutil
 import sys
 from pathlib import Path
 
@@ -51,27 +49,12 @@ def db(home):
 
 @pytest.fixture
 def loaded(db, cfg, fixtures_dir):
-    """ひな形・フォーマットを登録し、過去事例 3 件を取り込んだ状態。{事例名: id}"""
+    """過去事例 3 件を取り込んだ状態。{事例名: id}"""
     from core import workflow
-    workflow.register_master(db, fixtures_dir / "master.xlsx", cfg)
-    workflow.register_format(db, fixtures_dir / "format.xlsx", cfg)
-    ids = {}
-    for x in "ABC":
-        ids[f"case_{x}"] = workflow.import_case(db, fixtures_dir / f"case_{x}.xlsx", cfg)
-    db.update_case(ids["case_A"], attrs={"vendor": "架空システムズ", "systems": ["PACS", "電子カルテ"], "year": 2023,
-                                         "update_type": "リプレース", "beds": 450})
-    db.update_case(ids["case_B"], attrs={"vendor": "架空メディカル", "systems": ["電子カルテ"], "year": 2024,
-                                         "update_type": "バージョンアップ", "beds": 150})
-    db.update_case(ids["case_C"], attrs={"vendor": "架空システムズ", "systems": ["PACS"], "year": 2025,
-                                         "update_type": "リプレース", "beds": 500})
-    return ids
+    return {f"case_{x}": workflow.import_case(db, fixtures_dir / f"case_{x}.xlsx", cfg) for x in "ABC"}
 
 
 @pytest.fixture
 def advisor(db, cfg, templates, loaded):
     from core.advisor import Advisor
     return Advisor(db, cfg, templates).build()
-
-
-def key_of(db, name):
-    return next(i.key for i in db.master_items() if i.name == name)

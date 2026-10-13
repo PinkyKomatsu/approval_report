@@ -2,7 +2,7 @@
 
 判定は規則による（オフライン）。設定の placeholders に、上から順に（先にあるものほど優先）
   pattern：正規表現
-  source："vendors"（過去事例の案件属性にあるベンダー名）／ "person"（Janome の人名）
+  source："person"（Janome の人名）
 を書く。同じ名前で違う値が複数あれば {{日付}} {{日付2}} … と番号を付ける（同じ値は同じプレースホルダー）。
 """
 from __future__ import annotations
@@ -45,14 +45,10 @@ def specs_from(cfg: dict) -> list[Spec]:
     return out
 
 
-def _spans(text: str, spec: Spec, vendors: list[str], field_name: str):
+def _spans(text: str, spec: Spec, field_name: str):
     if spec.pattern is not None:
         for m in spec.pattern.finditer(text):
             if m.group().strip():
-                yield m.start(), m.end()
-    elif spec.source == "vendors":
-        for v in sorted({v for v in vendors if v}, key=len, reverse=True):
-            for m in re.finditer(re.escape(v), text):
                 yield m.start(), m.end()
     elif spec.source == "person" and (field_name == "owner" or _HONORIFIC.search(text)):
         for n in tokenizer.person_names(text):
@@ -61,9 +57,8 @@ def _spans(text: str, spec: Spec, vendors: list[str], field_name: str):
 
 
 class Extractor:
-    def __init__(self, specs: list[Spec], vendors: list[str] | None = None):
+    def __init__(self, specs: list[Spec]):
         self.specs = specs
-        self.vendors = list(vendors or [])
         self._cache: dict[tuple[str, str], Templated] = {}
 
     def extract(self, text: str, field_name: str = "") -> Templated:
@@ -73,7 +68,7 @@ class Extractor:
         taken = [False] * len(text)
         found = []                                   # (開始, 終了, 名前)
         for spec in self.specs:
-            for s, e in _spans(text, spec, self.vendors, field_name):
+            for s, e in _spans(text, spec, field_name):
                 if any(taken[s:e]):
                     continue
                 for i in range(s, e):

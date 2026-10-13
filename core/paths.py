@@ -25,7 +25,7 @@ def home() -> Path:
 
 
 def db_path() -> Path:
-    return home() / "advisor.db"
+    return home() / "examples.db"
 
 
 def config_path() -> Path:
@@ -38,19 +38,6 @@ def templates_path() -> Path:
 
 def logs_dir() -> Path:
     d = home() / "logs"
-    d.mkdir(parents=True, exist_ok=True)
-    return d
-
-
-def formats_dir() -> Path:
-    d = home() / "formats"
-    d.mkdir(parents=True, exist_ok=True)
-    return d
-
-
-
-def cache_dir() -> Path:
-    d = home() / "cache"
     d.mkdir(parents=True, exist_ok=True)
     return d
 

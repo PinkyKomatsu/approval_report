@@ -1,7 +1,6 @@
 """テスト用のダミーデータ（架空の病院名・ベンダー名だけを使う）を作る。
 
-  master.xlsx   ひな形（医事会計システム更新の全作業項目）
-  format.xlsx   フォーマット（No は数式、報告内容は F:G の結合セル、進捗状況はプルダウン、予定日・実績日は日付形式）
+  master.xlsx   ひな形（作業項目だけで記載がない。過去事例として取り込めないことの確認用）
   case_A.xlsx   過去事例A（架空総合病院／架空システムズ／PACS連携あり／2023年度）
   case_B.xlsx   過去事例B（架空市民病院／架空メディカル／WBS番号を「3-1」形式に振り直し・一部の項目なし・表記ゆれ）
   case_C.xlsx   過去事例C（架空中央病院／架空システムズ／PACS連携あり／2025年度。英語の列あり）
@@ -15,8 +14,7 @@ from datetime import datetime
 from pathlib import Path
 
 import openpyxl
-from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
-from openpyxl.worksheet.datavalidation import DataValidation
+from openpyxl.styles import Border, Font, PatternFill, Side
 
 OUT = Path(__file__).resolve().parent / "fixtures"
 
@@ -65,32 +63,6 @@ def build_master(path: Path):
         ws.cell(r, 2, wbs)
         ws.cell(r, 3, _phase_of(wbs))
         ws.cell(r, 4, name)
-    wb.save(path)
-
-
-def build_format(path: Path, rows: int = 30):
-    """記載用のフォーマット。作業項目の行（WBS番号・工程・作業項目）はひな形から転記済み。"""
-    wb = openpyxl.Workbook()
-    ws = _sheet(wb)
-    dv = DataValidation(type="list", formula1='"未着手,対応中,完了,中止"', allow_blank=True)
-    ws.add_data_validation(dv)
-    for i in range(rows):
-        r = 5 + i
-        ws.cell(r, 1, f"=ROW()-4")
-        if i < len(MASTER):
-            wbs, name = MASTER[i]
-            ws.cell(r, 2, wbs)
-            ws.cell(r, 3, _phase_of(wbs))
-            ws.cell(r, 4, name)
-        ws.merge_cells(start_row=r, start_column=6, end_row=r, end_column=7)
-        for c in range(1, 15):
-            ws.cell(r, c).border = BOX
-        for c in (5, 6, 9, 10, 14):
-            ws.cell(r, c).alignment = Alignment(wrap_text=True, vertical="top")
-        ws.cell(r, 12).number_format = "yyyy/m/d"
-        ws.cell(r, 13).number_format = "yyyy/m/d"
-        ws.row_dimensions[r].height = 30
-    dv.add(f"H5:H{4 + rows}")
     wb.save(path)
 
 
@@ -159,7 +131,6 @@ def scrub(path: Path):
 def build_all(out: Path = OUT) -> Path:
     out.mkdir(parents=True, exist_ok=True)
     build_master(out / "master.xlsx")
-    build_format(out / "format.xlsx")
     build_case(out / "case_A.xlsx", "架空総合病院", "架空システムズ", datetime(2023, 6, 10))
     build_case(out / "case_B.xlsx", "架空市民病院", "架空メディカル", datetime(2024, 9, 5), wbs_dash=True,
                skip=("PACS連携テスト",), rename={"職員向け操作研修": "職員操作研修会"},

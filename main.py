@@ -1,7 +1,7 @@
-"""WBS 報告内容アシスタント（起動）。
+"""WBS 記載例アシスタント（起動）。
 
     ApprovalReport.exe                  通常起動
-    ApprovalReport.exe --selftest DIR   画面を自動で操作し、登録 → 取込 → 照合 → 検索 → 差し替え → コピー を行って
+    ApprovalReport.exe --selftest DIR   画面を自動で操作し、取込 → 検索 → 作業項目の選択 → 値の差し替え → コピー を行って
                                         結果（selftest.json と画面の画像）を DIR に保存する（データは DIR の中に作る）
                                         --fixtures DIR でテスト用の Excel の場所を指定する
 """
@@ -47,7 +47,7 @@ def selftest(out: Path, fixtures: Path) -> int:
     from PySide6.QtWidgets import QApplication, QMessageBox
     out.mkdir(parents=True, exist_ok=True)
     os.environ["APPROVALREPORT_HOME"] = str(out / "home")
-    log = setup_logging()
+    setup_logging()
     QMessageBox.information = staticmethod(lambda *a, **k: QMessageBox.Ok)
     QMessageBox.question = staticmethod(lambda *a, **k: QMessageBox.No)
     QMessageBox.warning = staticmethod(lambda *a, **k: QMessageBox.No)
@@ -68,51 +68,42 @@ def selftest(out: Path, fixtures: Path) -> int:
         win.grab().save(str(out / name))
 
     try:
-        st, sp = win.state, win.search_page
-        win.format_page.master.register(fixtures / "master.xlsx")
-        win.format_page.output.register(fixtures / "format.xlsx")
-        win.tabs.setCurrentWidget(win.format_page)
-        shot("3_format.png")
-        win.cases_page.import_files([fixtures / f"case_{x}.xlsx" for x in "ABC"], sync=True)
+        sp = win.search_page
+        # ① 過去事例を取り込む（ひな形は記載がないので取り込まない）
         win.tabs.setCurrentWidget(win.cases_page)
-        shot("2_cases.png")
-        win.matching_page.refresh()
-        result["steps"]["pending"] = win.matching_page.pending.rowCount()
-        win.matching_page.confirm()
-        win.tabs.setCurrentWidget(win.matching_page)
-        shot("4_matching.png")
+        win.cases_page.import_files([fixtures / f"case_{x}.xlsx" for x in "ABC"] + [fixtures / "master.xlsx"], sync=True)
+        result["steps"]["cases"] = len(win.state.db.cases())
+        result["steps"]["log"] = win.cases_page.log.toPlainText().splitlines()
+        shot("1_cases.png")
         win.rebuild_index(sync=True)
         while (win._worker is not None and win._worker.isRunning()) or win._pending:
             app.processEvents()
         pump()
+        # ② トピックを入力 → ③ 作業項目を選ぶ
         sp.topic.setText("マスタ移行")
         sp.search()
         result["steps"]["items"] = [r.name for r in sp.results[:4]]
-        rehearsal = next(i for i in range(sp.items.topLevelItemCount()) if "移行リハーサル" in sp.items.topLevelItem(i).text(0))
-        sp.items.setCurrentItem(sp.items.topLevelItem(rehearsal))
-        sp.ph_edits["日付"].setText("2026/11/20")
-        sp._placeholder_changed("日付", "2026/11/20")
+        i = next(i for i in range(sp.items.topLevelItemCount()) if "移行リハーサル" in sp.items.topLevelItem(i).text(0))
+        sp.items.setCurrentItem(sp.items.topLevelItem(i))
+        # ④ 今回の値を入れる
+        sp.set_value("日付", "2026/11/20")
         card = sp.cards["report"]
         result["steps"]["report_ja"] = card.ja.toPlainText()
         result["steps"]["report_en"] = card.en.toPlainText()
+        # ⑤ コピー
         sp.copy_row("ja")
         result["steps"]["row_ja"] = QGuiApplication.clipboard().text()
         sp.copy_row("en")
         result["steps"]["row_en"] = QGuiApplication.clipboard().text()
-        result["steps"]["target"] = sp.target_label.text()
         win.tabs.setCurrentWidget(sp)
-        shot("1_search.png")
-        sp.right.setCurrentIndex(1)
-        shot("1_checklist.png")
-        win.tabs.setCurrentWidget(win.rules_page)
-        shot("5_rules.png")
-        win.tabs.setCurrentWidget(win.settings_page)
-        shot("6_settings.png")
+        shot("2_search.png")
+        win.tabs.setCurrentWidget(win.glossary_page)
+        shot("3_glossary.png")
         unchanged = {p.name: reader.sha256(p) for p in fixtures.glob("*.xlsx")} == hashes
         result["steps"]["excel_unchanged"] = unchanged
-        result["ok"] = (result["steps"]["pending"] >= 1 and "移行リハーサル" in result["steps"]["items"]
+        result["ok"] = (result["steps"]["cases"] == 3 and "移行リハーサル" in result["steps"]["items"]
                         and "2026/11/20" in result["steps"]["report_ja"] and "2026/11/20" in result["steps"]["report_en"]
-                        and result["steps"]["row_ja"].count("\t") >= 12 and unchanged)
+                        and result["steps"]["row_ja"].split("	")[5].startswith("移行リハーサルを2026/11/20") and unchanged)
     except Exception as e:
         result["error"] = f"{e}\n{traceback.format_exc()}"
     (out / "selftest.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")

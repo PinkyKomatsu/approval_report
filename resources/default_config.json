@@ -1,80 +1,88 @@
 {
-  "_comment": "初期設定。利用者の設定は %LOCALAPPDATA%\\ApprovalReport\\config.json に保存され、この値より優先されます。【仮定】の項目はすべてここで変えられます。",
-  "thresholds": {
-    "_comment": "【仮定】採用率がこの値以上なら必要、unneeded 未満なら不要、その間は要検討",
-    "required": 0.7,
-    "unneeded": 0.3
-  },
-  "match": {
-    "_comment": "照合：類似度 auto 以上は自動で対応付け、review〜auto は照合確認画面で選ぶ、review 未満はひな形外。wbs_name_min：WBS番号が一致しても名称の類似度がこれ未満なら番号では確定しない",
-    "auto": 90,
-    "review": 70,
-    "wbs_name_min": 60,
-    "phase_bonus": 3
-  },
+  "_comment": "初期設定。利用者の設定は %LOCALAPPDATA%\\ApprovalReport\\config.json に保存され、この値より優先されます。",
   "search": {
     "_comment": "検索：順位 = bm25 × BM25（最大値で 0〜1 に正規化）＋ name × 作業項目名の類似度（0〜1）。name_min 未満の類似度は 0 とみなす",
     "bm25": 0.7,
     "name": 0.5,
     "name_min": 55,
     "min_score": 0.12,
-    "top_n": 30,
-    "filter_min_similarity": 0.5
+    "top_n": 30
   },
   "representative": {
-    "_comment": "推奨記載例：出現頻度（最大値で正規化）× freq ＋ 他の記載との類似度 × central。優先ルールで重みを上げた事例の記載は weight 倍",
+    "_comment": "推奨記載例：出現頻度（最大値で正規化）× freq ＋ 他の記載との類似度 × central",
     "freq": 0.6,
     "central": 0.4,
     "others": 5
   },
-  "fields": {
-    "_comment": "【仮定】候補を出す欄。text：文章の欄、value：担当・日付など（過去の値を候補にする）",
-    "text": ["work", "report", "progress", "issue", "policy", "note"],
-    "value": ["owner", "plan_date", "actual_date"]
-  },
   "length": {
-    "_comment": "文字数の目安：過去事例の記載が min_samples 件以上あれば、その percentile パーセンタイル（10 字単位で切り上げ）。少なければ列幅（全角 1 字 = 幅 2）× 行数から推定",
+    "_comment": "文字数の目安：過去事例の記載が min_samples 件以上あれば、その長さの percentile パーセンタイル（10 字単位で切り上げ）",
     "percentile": 90,
     "min_samples": 5
   },
-  "weighting": {
-    "enabled": true,
-    "coef": 1.0,
-    "update_type": 0.3,
-    "bed_band": 0.2,
-    "vendor": 0.2,
-    "systems": 0.2,
-    "tags": 0.1,
-    "year": 0.05,
-    "year_span": 5
-  },
-  "bed_bands": [100, 200, 400],
-  "attributes": {
-    "update_types": ["リプレース", "バージョンアップ", "新規導入", "ベンダー変更"],
-    "systems": ["電子カルテ", "PACS", "検査システム", "薬剤システム", "物流システム", "DWH", "オーダリング", "健診システム"]
-  },
   "placeholders": [
-    {"name": "日付", "en": "Date", "enabled": true,
-     "pattern": "(?:令和\\d+年|\\d{4}\\s*[年/\\-.]\\s*)?\\d{1,2}\\s*[月/]\\s*\\d{1,2}日?|(?:令和\\d+年|\\d{4}年)\\d{1,2}月|\\d{4}/\\d{1,2}"},
-    {"name": "病院名", "en": "Hospital", "enabled": true,
-     "pattern": "[一-龥ァ-ヶーA-Za-zＡ-Ｚａ-ｚ0-9０-９]{1,20}?(?:病院|医療センター|クリニック|診療所)"},
-    {"name": "ベンダー", "en": "Vendor", "enabled": true, "source": "vendors"},
-    {"name": "担当者", "en": "Person", "enabled": true, "source": "person"},
-    {"name": "件数", "en": "Count", "enabled": true,
-     "pattern": "\\d[\\d,]*\\s*(?:件|本|画面|帳票|名|人|台|回|項目|種類|本数)"},
-    {"name": "数値", "en": "Number", "enabled": true, "pattern": "\\d[\\d,]*(?:\\.\\d+)?\\s*(?:%|％)?"}
+    {
+      "name": "日付",
+      "en": "Date",
+      "enabled": true,
+      "pattern": "(?:令和\\d+年|\\d{4}\\s*[年/\\-.]\\s*)?\\d{1,2}\\s*[月/]\\s*\\d{1,2}日?|(?:令和\\d+年|\\d{4}年)\\d{1,2}月|\\d{4}/\\d{1,2}"
+    },
+    {
+      "name": "病院名",
+      "en": "Hospital",
+      "enabled": true,
+      "pattern": "[一-龥ァ-ヶーA-Za-zＡ-Ｚａ-ｚ0-9０-９]{1,20}?(?:病院|医療センター|クリニック|診療所)"
+    },
+    {
+      "name": "担当者",
+      "en": "Person",
+      "enabled": true,
+      "source": "person"
+    },
+    {
+      "name": "件数",
+      "en": "Count",
+      "enabled": true,
+      "pattern": "\\d[\\d,]*\\s*(?:件|本|画面|帳票|名|人|台|回|項目|種類|本数)"
+    },
+    {
+      "name": "数値",
+      "en": "Number",
+      "enabled": true,
+      "pattern": "\\d[\\d,]*(?:\\.\\d+)?\\s*(?:%|％)?"
+    }
   ],
   "translate": {
     "_comment": "英訳で、訳した語の間に残ったときに落とす助詞",
-    "drop_particles": ["を", "が", "は", "に", "で", "と", "も", "へ", "の", "や", "から", "まで", "より", "している", "しました", "します", "した", "する", "された", "される", "です", "ます", "であり", "である", "だ"]
-  },
-  "copy": {
-    "_comment": "align：フォーマットの列位置をそろえる（数式列・結合セルは空欄）／fields：対象欄のみ",
-    "mode": "align"
+    "drop_particles": [
+      "を",
+      "が",
+      "は",
+      "に",
+      "で",
+      "と",
+      "も",
+      "へ",
+      "の",
+      "や",
+      "から",
+      "まで",
+      "より",
+      "している",
+      "しました",
+      "します",
+      "した",
+      "する",
+      "された",
+      "される",
+      "です",
+      "ます",
+      "であり",
+      "である",
+      "だ"
+    ]
   },
   "profile": {
     "header_scan_rows": 30,
-    "confidence_threshold": 0.7,
     "blank_rows_to_stop": 5
   }
 }
